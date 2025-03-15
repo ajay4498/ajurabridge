@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajura Connection</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: black; color: lime; }
+        input, button { padding: 10px; margin: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Ajura Connection</h1>
+    <p>Status: <span id="status">Connecting...</span></p>
+
+    <input type="text" id="message" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+
+    <h3>Response:</h3>
+    <pre id="response">Waiting...</pre>
+
+    <script>
+        // 🔗 WebSocket Connection to Ajura
+        let socket = new WebSocket("wss://your-flask-app.railway.app/ajura");
+
+        socket.onopen = () => {
+            document.getElementById("status").innerText = "Connected ✅";
+            console.log("Connected to Ajura WebSocket");
+        };
+
+        socket.onmessage = (event) => {
+            document.getElementById("response").innerText = event.data;
+            console.log("Ajura says:", event.data);
+        };
+
+        function sendMessage() {
+            let msg = document.getElementById("message").value;
+            if (msg) {
+                socket.send(JSON.stringify({ "message": msg }));
+                document.getElementById("message").value = "";
+            }
+        }
+
+        socket.onclose = () => {
+            document.getElementById("status").innerText = "Disconnected ❌";
+        };
+    </script>
+</body>
+</html>
